@@ -1,21 +1,38 @@
-import { StatusBar } from 'expo-status-bar';
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import {
+    View,
+    Text,
+    StatusBar,
+    TouchableOpacity as Button,
+    Image,
+} from 'react-native';
 
-export default function App() {
-  return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
-}
+import * as Location from 'expo-location';
+import WelcomeScreen from './app/screens/WelcomeScreen';
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+const App = () => {
+    const [location, setLocation] = useState(null);
+    const [errMsg, setErrMsg] = useState(null);
+
+    useEffect(() => {
+        (async () => {
+            let { status } = await Location.requestPermissionsAsync();
+            if (status !== 'granted') {
+                setErrMsg('Permission to use Location was denied!');
+            }
+            let location = await Location.getCurrentPositionAsync({});
+            setLocation(location);
+        })();
+    });
+
+    let text = 'reee...';
+    if (errMsg) {
+        text = errMsg;
+    } else if (location) {
+        text = JSON.stringify(location);
+    }
+
+    return <WelcomeScreen />;
+};
+
+export default App;
